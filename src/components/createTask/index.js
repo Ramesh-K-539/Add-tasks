@@ -28,15 +28,16 @@ class CreateTask extends Component {
     tasksList: [],
     filteredLists: [],
     taskInput: '',
-    tag: '',
+    tag: 'health',
     clickId: '',
     isActive: false,
+    tagId: '',
   }
 
   onSubmitTask = event => {
     event.preventDefault()
 
-    const {taskInput, tag} = this.state
+    const {taskInput, tag, tagId} = this.state
 
     const uuid = uuidv4()
 
@@ -44,7 +45,7 @@ class CreateTask extends Component {
       const object = {
         id: uuid,
         task: taskInput,
-        tagId: tag.toUpperCase(),
+        tagId,
         tagText: tag,
       }
 
@@ -52,6 +53,7 @@ class CreateTask extends Component {
         tasksList: [...prevState.tasksList, object],
         taskInput: '',
         tag: '',
+        tagId: '',
       }))
     }
   }
@@ -61,8 +63,11 @@ class CreateTask extends Component {
   }
 
   selectingTag = event => {
-    this.setState({tag: event.target.value})
-    console.log(event.target.value)
+    const {tagsList} = this.props
+    const id = event.target.value
+    const filterTag = tagsList.filter(each => each.optionId === id)[0]
+
+    this.setState({tag: filterTag.displayText, tagId: id})
   }
 
   onFilterWithTag = id => {
@@ -86,35 +91,33 @@ class CreateTask extends Component {
       filteredLists,
       clickId,
       isActive,
+      tagId,
     } = this.state
     const lists = isActive ? filteredLists : tasksList
     const isTrue = tasksList.length === 0
-    console.log(filteredLists)
+    console.log(tag)
     return (
       <AppContainer>
         <Form onSubmit={this.onSubmitTask}>
           <Heading color="#f3aa4e" size="35">
             Create a task
           </Heading>
-          <Label margin="20" htmlFor="Task">
+          <Label margin="20" htmlFor="TASK">
             Task
           </Label>
           <Input
-            id="Task"
+            id="TASK"
             type="text"
             placeholder="Enter the task here"
             onChange={this.enteringTask}
             value={taskInput}
           />
-          <Label margin="45" htmlFor="Tags">
+          <Label margin="45" htmlFor="TAGS">
             Tags
           </Label>
-          <Select id="Tags" value={tag} onChange={this.selectingTag}>
+          <Select id="TAGS" value={tagId} onChange={this.selectingTag}>
             {tagsList.map(eachTag => (
-              <Option
-                key={eachTag.optionId}
-                checked={eachTag.optionId === 'HEALTH'}
-              >
+              <Option key={eachTag.optionId} value={eachTag.optionId}>
                 {eachTag.displayText}
               </Option>
             ))}
